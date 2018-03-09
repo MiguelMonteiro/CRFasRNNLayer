@@ -1,0 +1,3 @@
+[submodule "permutohedral_lattice"]
+	path = permutohedral_lattice
+	url = https://github.com/MiguelMonteiro/permutohedral_lattice
