@@ -24,9 +24,9 @@ SOFTWARE.
 
 import numpy as np
 import tensorflow as tf
-import permutohedral_lattice.lattice_filter_op_loader
+import lattice_filter_op_loader
 
-module = permutohedral_lattice.lattice_filter_op_loader.module
+module = lattice_filter_op_loader.module
 
 
 def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta, theta_gamma, num_iterations):
