@@ -30,7 +30,7 @@ with tf.Session() as sess:
     o = sess.run(output)
 
 o = np.round(o * 255).astype(np.uint8)
-o=np.squeeze(o)[:,:,1]
+o = np.squeeze(o)[:, :, 1]
 o[o < 128] = 0
 o[o >= 128] = 255
 im = Image.fromarray(np.squeeze(o))
