@@ -44,10 +44,9 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
     all_ones = np.ones(unaries_shape, dtype=np.float32)
 
     # Prepare filter normalization coefficients
-    epsilon = 1e-8
-    spatial_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=False, theta_gamma=theta_gamma) + epsilon
+    spatial_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=False, theta_gamma=theta_gamma)
     bilateral_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=True, theta_alpha=theta_alpha,
-                                                theta_beta=theta_beta) + epsilon
+                                                theta_beta=theta_beta)
 
     q_values = unaries
     for i in range(num_iterations):
@@ -84,4 +83,4 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
         #pairwise = tf.reshape(pairwise, unaries_shape)
         q_values = unaries - pairwise
 
-    return q_values, bilateral_out, spatial_out, pairwise
+    return q_values

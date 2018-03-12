@@ -18,7 +18,7 @@ theta_alpha = 8
 theta_beta = 0.125
 theta_gamma = 1
 num_iterations = 1
-output, _, _, _ = crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta, theta_gamma, num_iterations)
+output = crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta, theta_gamma, num_iterations)
 
 init = tf.global_variables_initializer()
 with tf.Session() as sess:
