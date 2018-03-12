@@ -10,7 +10,7 @@ from crf_rnn_layer import crf_rnn_layer
 
 module = lattice_filter_op_loader.module
 
-unaries = tf.expand_dims(tf.Variable(np.array(Image.open('Images/input.bmp'))/255.0, dtype=tf.float32), axis=0)
+unaries = tf.expand_dims(tf.Variable(np.array(Image.open('permutohedral_lattice/Images/input.bmp'))/255.0, dtype=tf.float32), axis=0)
 reference_image = unaries
 
 num_classes = 3

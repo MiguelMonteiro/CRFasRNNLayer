@@ -10,7 +10,7 @@ from crf_rnn_layer import crf_rnn_layer
 
 module = lattice_filter_op_loader.module
 
-rgb = np.array(Image.open('Images/input.bmp'))
+rgb = np.array(Image.open('permutohedral_lattice/Images/input.bmp'))
 grey = np.array(0.2989 * rgb[:, :, 0] + 0.5870 * rgb[:, :, 1] + 0.1140 * rgb[:, :, 2]).astype(np.uint8)
 grey = np.expand_dims(np.stack([grey, 255-grey], axis=-1), axis=0)
 
