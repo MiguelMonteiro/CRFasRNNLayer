@@ -18,10 +18,10 @@ unaries = tf.Variable(grey / 255.0, dtype=tf.float32)
 reference_image = tf.Variable(np.expand_dims(rgb, axis=0), dtype=tf.float32)
 
 num_classes = 2
-theta_alpha = 4.0
+theta_alpha = 8
 theta_beta = 0.125
-theta_gamma = 0.5
-num_iterations = 2
+theta_gamma = 2
+num_iterations = 1
 output = crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta, theta_gamma, num_iterations)
 output = tf.nn.softmax(output, dim=-1)
 init = tf.global_variables_initializer()
