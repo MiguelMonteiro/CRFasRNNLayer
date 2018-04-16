@@ -8,7 +8,7 @@ cd build_dir
 
 
 CUDA_COMPILER=/usr/local/cuda/bin/nvcc
-CXX_COMPILER=/usr/bin/g++-4.8
+CXX_COMPILER=/usr/bin/g++-6
 
 SPATIAL_DIMS=3
 INPUT_CHANNELS=1

@@ -73,7 +73,6 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
 
         # Adding unary potentials
         pairwise = tf.reshape(tf.transpose(pairwise), unaries_shape)
-        # pairwise = tf.reshape(pairwise, unaries_shape)
         q_values = unaries - pairwise
 
-    return q_values, spatial_ker_weights, bilateral_ker_weights, compatibility_matrix, pairwise
+    return q_values
