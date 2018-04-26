@@ -30,20 +30,16 @@ module = lattice_filter_op_loader.module
 
 
 def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta, theta_gamma, num_iterations):
-    spatial_ker_weights = tf.get_variable('spatial_ker_weights', shape=(num_classes, num_classes),
-                                          initializer=tf.initializers.variance_scaling(distribution='uniform'))
 
-    bilateral_ker_weights = tf.get_variable('bilateral_ker_weights', shape=(num_classes, num_classes),
-                                            initializer=tf.initializers.variance_scaling(distribution='uniform'))
-
-    compatibility_matrix = tf.get_variable('compatibility_matrix', shape=(num_classes, num_classes),
-                                           initializer=tf.initializers.variance_scaling(distribution='uniform'))
-
-    unaries_shape = unaries.get_shape()
-
-    all_ones = np.ones(unaries_shape, dtype=np.float32)
+    spatial_ker_weights = tf.get_variable('spatial_ker_weights', shape=(num_classes), initializer=tf.initializers.truncated_normal(mean=0, stddev=0.25))
+    bilateral_ker_weights = tf.get_variable('bilateral_ker_weights', shape=(num_classes), initializer=tf.initializers.truncated_normal(mean=0, stddev=0.25))
+    spatial_ker_weights = tf.diag(spatial_ker_weights)
+    bilateral_ker_weights = tf.diag(bilateral_ker_weights)
+    compatibility_matrix = tf.constant(1 - np.eye(num_classes), dtype=tf.float32)
 
     # Prepare filter normalization coefficients
+    unaries_shape = unaries.get_shape()
+    all_ones = np.ones(unaries_shape, dtype=np.float32)
     spatial_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=False, theta_gamma=theta_gamma)
     bilateral_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=True, theta_alpha=theta_alpha, theta_beta=theta_beta)
 
@@ -51,16 +47,16 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
     for i in range(num_iterations):
 
         if num_classes == 1:
-            softmax_out = tf.nn.sigmoid(q_values)
+            q_values = tf.nn.sigmoid(q_values)
         else:
-            softmax_out = tf.nn.softmax(q_values, dim=-1)
+            q_values = tf.nn.softmax(q_values, dim=-1)
 
         # Spatial filtering
-        spatial_out = module.lattice_filter(softmax_out, reference_image, bilateral=False, theta_gamma=theta_gamma)
+        spatial_out = module.lattice_filter(q_values, reference_image, bilateral=False, theta_gamma=theta_gamma)
         spatial_out = spatial_out / spatial_norm_vals
 
         # Bilateral filtering
-        bilateral_out = module.lattice_filter(softmax_out, reference_image, bilateral=True, theta_alpha=theta_alpha,
+        bilateral_out = module.lattice_filter(q_values, reference_image, bilateral=True, theta_alpha=theta_alpha,
                                               theta_beta=theta_beta)
         bilateral_out = bilateral_out / bilateral_norm_vals
 
@@ -76,3 +72,52 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
         q_values = unaries - pairwise
 
     return q_values
+
+
+# def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta, theta_gamma, num_iterations):
+#     spatial_ker_weights = tf.get_variable('spatial_ker_weights', shape=(num_classes, num_classes),
+#                                           initializer=tf.initializers.variance_scaling(distribution='uniform'))
+#
+#     bilateral_ker_weights = tf.get_variable('bilateral_ker_weights', shape=(num_classes, num_classes),
+#                                             initializer=tf.initializers.variance_scaling(distribution='uniform'))
+#
+#     compatibility_matrix = tf.get_variable('compatibility_matrix', shape=(num_classes, num_classes),
+#                                            initializer=tf.initializers.variance_scaling(distribution='uniform'))
+#
+#     unaries_shape = unaries.get_shape()
+#
+#     all_ones = np.ones(unaries_shape, dtype=np.float32)
+#
+#     # Prepare filter normalization coefficients
+#     spatial_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=False, theta_gamma=theta_gamma)
+#     bilateral_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=True, theta_alpha=theta_alpha, theta_beta=theta_beta)
+#
+#     q_values = unaries
+#     for i in range(num_iterations):
+#
+#         if num_classes == 1:
+#             softmax_out = tf.nn.sigmoid(q_values)
+#         else:
+#             softmax_out = tf.nn.softmax(q_values, dim=-1)
+#
+#         # Spatial filtering
+#         spatial_out = module.lattice_filter(softmax_out, reference_image, bilateral=False, theta_gamma=theta_gamma)
+#         spatial_out = spatial_out / spatial_norm_vals
+#
+#         # Bilateral filtering
+#         bilateral_out = module.lattice_filter(softmax_out, reference_image, bilateral=True, theta_alpha=theta_alpha,
+#                                               theta_beta=theta_beta)
+#         bilateral_out = bilateral_out / bilateral_norm_vals
+#
+#         # Weighting filter outputs
+#         message_passing = tf.matmul(spatial_ker_weights, tf.transpose(tf.reshape(spatial_out, (-1, num_classes)))) + \
+#                           tf.matmul(bilateral_ker_weights, tf.transpose(tf.reshape(bilateral_out, (-1, num_classes))))
+#
+#         # Compatibility transform
+#         pairwise = tf.matmul(compatibility_matrix, message_passing)
+#
+#         # Adding unary potentials
+#         pairwise = tf.reshape(tf.transpose(pairwise), unaries_shape)
+#         q_values = unaries - pairwise
+#
+#     return q_values
