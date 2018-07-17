@@ -40,9 +40,7 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
         # Prepare filter normalization coefficients
         unaries_shape = unaries.get_shape()
         all_ones = np.ones(unaries_shape, dtype=np.float32)
-        spatial_norm_vals = module.lattice_filter(all_ones, reference_image, bilateral=False, theta_gamma=theta_gamma)
-        bilateral_norm_vals = module.lattice_filter(all_ones, reference_image,
-                                                    bilateral=True, theta_alpha=theta_alpha, theta_beta=theta_beta)
+
         q_values = unaries
         for i in range(num_iterations):
 
@@ -50,12 +48,10 @@ def crf_rnn_layer(unaries, reference_image, num_classes, theta_alpha, theta_beta
 
             # Spatial filtering
             spatial_out = module.lattice_filter(q_values, reference_image, bilateral=False, theta_gamma=theta_gamma)
-            spatial_out = spatial_out / spatial_norm_vals
 
             # Bilateral filtering
             bilateral_out = module.lattice_filter(q_values, reference_image, bilateral=True, theta_alpha=theta_alpha,
                                                   theta_beta=theta_beta)
-            bilateral_out = bilateral_out / bilateral_norm_vals
 
             # Weighting filter outputs
             message_passing = tf.matmul(spatial_ker_weights, tf.transpose(tf.reshape(spatial_out, (-1, num_classes)))) + \
