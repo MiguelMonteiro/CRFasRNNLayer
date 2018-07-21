@@ -24,6 +24,10 @@ See the nested module [permutohedral_lattice](https://github.com/MiguelMonteiro/
 
 See `Test` for dummy example usages and the [original repository](https://github.com/sadeepj/crfasrnn_keras) to see how to integrate this with a neural network (logits come in this layer and logits come out (do not feed probability or labels as inputs)).
 
+#### Citing
+
+If you use this work please consider citing our [paper](https://arxiv.org/abs/1807.07464) as well as the original 2D RGB [paper](https://arxiv.org/abs/1502.03240).
+
 #### Known Issues:
 
 1. The GPU kernel allocates a fixed size hash table which uses memory proportional to the square of the number of classes. 
