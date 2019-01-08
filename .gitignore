@@ -1,3 +1,6 @@
 .idea/*
 *.pyc
 .DS_Store
+/venv
+lattice_filter.so
+lattice_filter_op_loader.py
